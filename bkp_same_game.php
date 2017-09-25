@@ -202,22 +202,22 @@
 
                 } while ($marked == true);
 
-                // verificamos se itens também estão marcados caso a cor encontrada seja maior que 1
-                if ($totFound > 1) {
-
+                if($totFound > 1){
                     $finalArray[$clickL][$clickC] = 'transparent';
 
-                    // marcar células marcadas como transparente
+                    // remover celulas marcadas
                     for($l = $linhas - 1; $l > 0; $l--) {
 
                         foreach ($finalArray[$l] as $c => $corAtual) {
 
-                            // verificando se célula abaixo é transparent ou está marcado
-                            if ($corAtual == 'transparent') {                            
+                            // verificando se item abaixo é transparent ou está marcado
+                            if ($corAtual == 'transparent') {
+                            
                                 $achou = false;
-                                $vL = $l;
-                                do {
 
+                                $vL = $l;
+
+                                do {
                                     $vL--;
 
                                     if($finalArray[$vL][$c] != 'transparent'){
@@ -227,28 +227,10 @@
                                         $achou = true;
                                     }
 
-                                    if($vL == 0) {
-                                        $achou = true;
-                                    }
-
+                                    if($vL == 0) $achou = true;
                                 } while (!$achou);
-
                             }
                             
-                        }
-
-
-                    }
-
-                    echo "<hr>";
-
-                    // mover coluna transparent para esquerda
-                    // for é executado até o $l ficar menor que 0
-                    for ($l = $linhas - 1; $l >= 0; $i--) {
-                        foreach($finalArray[$l] as $key => $value) {
-                            if ($value == 'transparent') {
-                                echo "coluna deve ser removida";
-                            }
                         }
                     }
 
@@ -262,9 +244,11 @@
 
             echo $totFound;            
 
+
             // ##############################################################################################################
             // ##############################################################################################################
             // ##############################################################################################################
+
 
             foreach($finalArray as $linha => $myLinha){
                 echo "<tr>";
@@ -319,7 +303,7 @@
 
         <?php
 
-        var_dump($finalArray[$l][$c]);
+
 
         ?>
     </div>
