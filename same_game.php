@@ -22,15 +22,25 @@
 
                 session_start();
 
+                // número de linhas
                 $linhas = 5;
+
+                // número de colunas
                 $colunas = 5;
+
+                // número de células
                 $tdCount = 0;
 
+                // verificação se existe o parametro acao na url
                 $acao = !empty($_REQUEST['acao']) ? $_REQUEST['acao'] : '' ;
 
+                // verificamos se existe o parametro L na url
                 $clickL = !empty($_REQUEST['l']) ? $_REQUEST['l'] : 0 ;
+
+                // verificamos se existe o parametro C na url
                 $clickC = !empty($_REQUEST['c']) ? $_REQUEST['c'] : 0 ;
 
+                // cores dos blocos
                 $coresArray = array(
                     "crimson",
                     "cornflowerblue",
@@ -38,40 +48,62 @@
                     "purple"
                 );
 
+            // se a ação for diferente de click, geramos um novo jogo (matriz)
             if ($acao != 'click') {
 
+                // número de células
                 $tds = $linhas * $colunas;
 
+                // media de cores | vamos utilizar a média de cores para sortear as cores que serão preenchidas na matriz
                 $coresMedia = ceil($tds / count($coresArray));
 
+                // definimos um array
                 $sortArray = array();            
 
+                // aqui populamos o $sortArray com a média de cores
                 foreach ($coresArray as $cores) {
                     for ($a = 0; $a < $coresMedia; $a++) {
                         $sortArray[] = $cores;
                     }
                 }
 
+                // randomizamos a matriz, mantendo o índice
                 shuffle($sortArray);
 
-                $_SESSION['sortArray'] = $sortArray;
+
+                $tot = 0;
+                $finalArray = array();
+
+                for($l=0;$l<$linhas;$l++){
+                    for($c=0;$c<$colunas;$c++){
+                        $finalArray[$l][$c] = $sortArray[$tot];
+                        $tot++;
+                    }
+                }
+
+                unset($sortArray);
+
+
+                // colocamos o array na sessão
+                $_SESSION['finalArray'] = $finalArray;
 
             } else {
-            
-                $sortArray  = $_SESSION['sortArray'];
-
+                // colocamos o array da session na variável $finalarray
                 $finalArray = $_SESSION['finalArray'];
 
-                echo "Click on line <b>" . $clickL . "</b> and column <b>" . $clickC . "</b><br><br>";               
+                // 
+                echo "Clicked on line <b>" . $clickL . "</b> and column <b>" . $clickC . "</b><br><br>";               
                 
+                // identificamos a posição e cor do click
                 $colorClick = $finalArray[$clickL][$clickC];
 
-                echo "<pre>";
-
+                // printamos a cor clicada
                 echo "Color: " . $colorClick;
 
+                // definimos um novo array para registrar os pontos marcados
                 $markedArray = array();
 
+                // 
                 foreach($finalArray as $l => $linha) {
                     foreach ($linha as $c => $coluna) {
                         $markedArray[$l][$c] = null;
@@ -103,6 +135,7 @@
 
                                         // verificando que celula é da mesma cor
                                         if ($colorClick == $finalArray[$l - 1][$c]) {
+                                            $finalArray[$l - 1][$c] = 'transparent';
                                             $markedArray[$l -1][$c] = 1;
                                             $marked = true;
                                             $totFound++;
@@ -118,6 +151,7 @@
                                     if ($markedArray[$l][$c + 1] != 1) {
 
                                         if($colorClick == $finalArray[$l][$c + 1]) {
+                                            $finalArray[$l][$c + 1] = 'transparent';
                                             $markedArray[$l][$c + 1] = 1;
                                             $marked = true;
                                             $totFound++;
@@ -134,6 +168,7 @@
 
                                         // verificando se celula é da mesma cor
                                         if($colorClick == $finalArray[$l + 1][$c]) {
+                                            $finalArray[$l + 1][$c] = 'transparent';
                                             $markedArray[$l + 1][$c] = 1;
                                             $marked = true;
                                             $totFound++;
@@ -149,6 +184,7 @@
 
                                         // verificando se a cor da celula é a mesma
                                         if ($colorClick == $finalArray[$l][$c - 1]) {
+                                            $finalArray[$l][$c - 1] = 'transparent';
                                             $markedArray[$l][$c - 1] = 1;
                                             $marked = true;
                                             $totFound++;
@@ -158,14 +194,49 @@
 
                                 }
 
-
                             }
 
                         }
 
                     }
 
-                } while ($marked == true);              
+                } while ($marked == true);
+
+                if($totFound > 1){
+                    $finalArray[$clickL][$clickC] = 'transparent';
+
+                    // remover celulas marcadas
+                    for($l = $linhas - 1; $l > 0; $l--) {
+
+                        foreach ($finalArray[$l] as $c => $corAtual) {
+
+                            // verificando se item abaixo é transparent ou está marcado
+                            if ($corAtual == 'transparent') {
+                            
+                                $achou = false;
+
+                                $vL = $l;
+
+                                do {
+                                    $vL--;
+
+                                    if($finalArray[$vL][$c] != 'transparent'){
+                                        // setamos a celula atual como cor da celula acima
+                                        $finalArray[$l][$c] = $finalArray[$vL][$c];
+                                        $finalArray[$vL][$c] = 'transparent';
+                                        $achou = true;
+                                    }
+
+                                    if($vL == 0) $achou = true;
+                                } while (!$achou);
+                            }
+                            
+                        }
+                    }
+
+                }
+
+                $_SESSION['finalArray'] = $finalArray;
 
             }
 
@@ -173,35 +244,24 @@
 
             echo $totFound;            
 
-            $finalArray = array();
-
 
             // ##############################################################################################################
             // ##############################################################################################################
             // ##############################################################################################################
 
 
-            for ($linha = 0; $linha < $linhas; $linha++) {
-
+            foreach($finalArray as $linha => $myLinha){
                 echo "<tr>";
 
-                    for ($coluna = 0; $coluna < $colunas; $coluna++) {
-
-                        $finalArray[$linha][$coluna] = $sortArray[$tdCount];
-
-
-                        echo "<td onclick='javascript: window.location=\"same_game.php?acao=click&l={$linha}&c={$coluna}\"' style='padding:20px;background-color: " . $sortArray[$tdCount] . ";'>";
-                            echo $linha . ' | ' . $coluna;
+                    foreach($myLinha as $coluna => $myColuna){
+                        echo "<td onclick='javascript: window.location=\"same_game.php?acao=click&l={$linha}&c={$coluna}\"' style='padding:20px;background-color: " . $myColuna . ";'>";
+                            
                         echo "</td>";
-                        $tdCount++;
                     }
 
                 echo "</tr>";
 
             }
-
-            $_SESSION['finalArray'] = $finalArray;
-
             ?>
             
 
@@ -214,9 +274,9 @@
 
             <?php
 
-                var_dump($markedArray);
+                var_dump($finalArray);
                             
-                foreach ($markedArray as $linha) {
+                foreach ($finalArray as $linha) {
                     
                     echo "<tr>";
 
@@ -228,31 +288,6 @@
 
                     echo "</tr>";
                 }
-
-
-
-
-                // foreach ($markedArray[0] as $coluna){
-                    
-                // }
-                // foreach ($markedArray[1] as $coluna){
-                    
-                // }
-                // foreach ($markedArray[2] as $coluna){
-                    
-                // }
-                // foreach ($markedArray[3] as $coluna){
-                    
-                // }
-                // foreach ($markedArray[4] as $coluna){
-                    
-                // }
-
-                // $coluna = $markedArray[4][0];
-                // $coluna = $markedArray[4][1];
-                // $coluna = $markedArray[4][2];
-                // $coluna = $markedArray[4][3];
-                // $coluna = $markedArray[4][4];
 
             ?>
 
