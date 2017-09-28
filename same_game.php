@@ -320,19 +320,12 @@
         <table border="1">
 
             <?php
-
                 var_dump($finalArray);
-
                 foreach ($finalArray as $linha) {
-
                     echo "<tr>";
-
                     foreach ($linha as $coluna) {
-
                         echo "<td style='padding: 10px;'>{$coluna}</td>";
-
                     }
-
                     echo "</tr>";
                 }
 
