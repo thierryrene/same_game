@@ -1,3 +1,11 @@
+<?php
+
+if ($_SERVER['SERVER_NAME'] == 'localhost') {
+    require_once '../composer/vendor/autoload.php';    
+}
+
+?>
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -46,6 +54,9 @@
                     "purple",
                 );
 
+                // array
+                $finalArray = array();
+
                 // se a ação for diferente de click, geramos um novo jogo (matriz)
                 if ($acao != 'click') {
 
@@ -65,11 +76,14 @@
                         }
                     }
 
+                    
+
                     // randomizamos a matriz, mantendo o índice
                     shuffle($sortArray);
 
-                    $tot        = 0;
-                    $finalArray = array();
+                    r($sortArray);
+
+                    $tot = 0;
 
                     for ($l = 0; $l < $linhas; $l++) {
                         for ($c = 0; $c < $colunas; $c++) {
@@ -87,6 +101,7 @@
                     $_SESSION['points'] = 0;
 
                 } else {
+
                     // colocamos o array da session na variável $finalarray
                     $finalArray = $_SESSION['finalArray'];
 
