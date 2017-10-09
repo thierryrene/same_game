@@ -74,9 +74,7 @@ if ($_SERVER['SERVER_NAME'] == 'localhost') {
                         for ($a = 0; $a < $coresMedia; $a++) {
                             $sortArray[] = $cores;
                         }
-                    }
-
-                    
+                    }                    
 
                     // randomizamos a matriz, mantendo o índice
                     shuffle($sortArray);

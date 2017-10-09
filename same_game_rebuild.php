@@ -28,7 +28,7 @@ if ($acao != 'click') {
 	// média de cores
 	$mediaCores = ceil($totalCelulas / count($listaCores));
 
-	// definimos o array que vai armazenar o vetor de cores
+	// definimos o array que vai armazenar o vetor de counter_reset()
 	$sortArray = array();
 
 	// aqui atribuimos os valores de cores ao vetor sortArray
@@ -73,9 +73,8 @@ if ($acao != 'click') {
 
 	// aqui definimos todos os itens da matriz mascara como null
 	foreach($checkArray as $linha => $valorLinha) {
-		foreach ($linha as $coluna => $valorColuna) {
+		foreach ($valorLinha as $coluna => $valorColuna) {
 			$markedArray[$linha][$coluna] = null;
-			
 		}
 	}
 
@@ -86,83 +85,120 @@ if ($acao != 'click') {
 	$contadorCellMarked = 1;
 
 	// // através do DO / WHILE verificamos todos os itens em volta do bloco clicado
-	// do {
+	do {
 
-	// 	$cellMarked = false;
+		$cellMarked = false;
 
-	// 	// percorremos as linhas da matriz
-	// 	foreach ($markedArray as $linha => $valorLinha) {
+		// percorremos as linhas da matriz
+		foreach ($markedArray as $linha => $valorLinha) {
 			
-	// 		// percorremos as colunas da matriz
-	// 		// a intenção aqui é encontrar outras células = 1
-	// 		foreach ($valorLinha as $coluna => $valorColuna) {
+			// percorremos as colunas da matriz
+			// a intenção aqui é encontrar outras células = 1
+			foreach ($valorLinha as $coluna => $valorColuna) {
 				
-	// 			// se o valor da célula for igual a 1
-	// 			if ($valorColuna == 1) {
+				// se o valor da célula for igual a 1
+				if ($valorColuna == 1) {
 					
-	// 				// verificamos a célula de cima (linha - 1) a partir do bloco clicado
-	// 				if (($linha - 1) >= 0) {
+					// verificamos a célula de cima (linha - 1) a partir do bloco clicado
+					if (($linha - 1) >= 0) {
+						// se na matriz de marcação, essa célula possui o valor diferente de 1
+						if ($markedArray[$linha - 1][$coluna] != 1 ) {
+							// iniciamos as verificações para validar se o bloco acima, é o igual ao bloco clicado
+							if ($blockClick == $checkArray[$linha - 1][$coluna]) {
+								// se o bloco clicado for igual, definimos os valores:
+								$checkArray[$linha - 1][$coluna] = 'transparent';
+								$checkArray[$linha - 1][$coluna] = 1;
+								$cellMarked 					 = true;
+								$contadorCellMarked++;
+							}
+						}
+					}
 
-	// 					// se na matriz de marcação, essa célula possui o valor diferente de 1
-	// 					if ($markedArray[$linha - 1][$coluna] != 1 ) {
+					// verificamos bloco da frente
+					if (($coluna + 1) < count($coluna)) {
+						
+						// primeiro validamos se o mesmo já está marcado com 1
+						if ($markedArray[$linha][$coluna + 1] != 1) {
+							if ($blockClick == $checkArray[$linha][$coluna + 1]) {
+								// se os blocos forem iguais
+								$checkArray[$linha][$coluna + 1] = 'transparent';
+								$checkArray[$linha][$coluna + 1] = 1;
+								$cellMarked 					 = true;
+								$contadorCellMarked++;
+							}
+						}
+					}
 
-	// 						// iniciamos as comparações do bloco clicado com a matriz markedArray
-	// 						if ($blockClick == $checkArray[$linha - 1][$coluna]) {
+					// verificamos bloco de baixo
+					if (($linha + 1) >= count($markedArray)) {
+						// se bloco está marcado
+						if ($markedArray[$linha + 1][$coluna] != 1) {
+							// verificamos se o bloco clicado, é igual ao bloco de baixo
+							if ($blockClick == $checkArray[$linha + 1][$coluna]) {
+								$checkArray[$linha + 1][$coluna] = 'transparent';
+								$checkArray[$linha + 1][$coluna] = 1;
+								$cellMarked 					 = true;
+								$contadorCellMarked++;
+							}
+						}
+					}
 
-	// 							// se o bloco clicado for igual 
-	// 							$checkArray[$linha - 1][$coluna] = 'transparent';
-	// 							$checkArray[$linha - 1][$coluna] = 1;
-	// 							$cellMarked 					 = true;
-	// 							$contadorCellMarked++;
-	// 						}
-	// 					}
-	// 				}
+					if (($coluna - 1) >= 0 ) {
+						if($markedArray[$linha][$coluna - 1] != 1) {
+							if($blockClick == $checkArray[$linha][$coluna - 1]) {
+								$checkArray[$linha][$coluna - 1] = 'transparent';
+								$checkArray[$linha][$coluna - 1] = 1;
+								$cellMarked 					 = true;
+								$contadorCellMarked++;
+							}
+						}
+					}
 
-	// 				// verificamos o item da frente (coluna + 1)
-	// 				// se o número colunas exceder o count 
-	// 				if (($coluna + 1) < count($coluna)) {
+					// verificamos o item da frente (coluna + 1)
+					// se o número colunas exceder o count 
+					// if (($coluna + 1) < count($coluna)) {
 
-	// 					// verificamos 
-	// 					if($markedArray[$linha][$coluna + 1] != 1) {
-	// 						if($blockClick == $checkArray[$linha][$coluna + 1]) {
-	// 							$checkArray[$linha][$coluna + 1] = 'transparent';
-	// 							$checkArray[$linha][$coluna + 1] = 1;
-	// 							$cellMarked 						 = true;
-	// 							$contadorCellMarked++;
-	// 						}
-	// 					}
-	// 				}
+					// 	// verificamos 
+					// 	if($markedArray[$linha][$coluna + 1] != 1) {
+					// 		if($blockClick == $checkArray[$linha][$coluna + 1]) {
+					// 			$checkArray[$linha][$coluna + 1] = 'transparent';
+					// 			$checkArray[$linha][$coluna + 1] = 1;
+					// 			$cellMarked 						 = true;
+					// 			$contadorCellMarked++;
+					// 		}
+					// 	}
+					// }
 
-	// 				// verificamos o item de baixo (linha + 1)
-	// 				if (($linha + 1) >= 0) {
-	// 					if ($markedArray[$linha + 1][$coluna] != 1) {
-	// 						if ($blockClick == $checkArray[$linha + 1][$coluna]) {
-	// 							$checkArray[$linha + 1][$coluna] = 'transparent';
-	// 							$checkArray[$linha + 1][$coluna] = 1;
-	// 							$cellMarked						 = true;
-	// 							$contadorCellMarked++;
-	// 						}
-	// 					}
-	// 				}
+					// // verificamos o item de baixo (linha + 1)
+					// if (($linha + 1) >= 0) {
+					// 	if ($markedArray[$linha + 1][$coluna] != 1) {
+					// 		if ($blockClick == $checkArray[$linha + 1][$coluna]) {
+					// 			$checkArray[$linha + 1][$coluna] = 'transparent';
+					// 			$checkArray[$linha + 1][$coluna] = 1;
+					// 			$cellMarked						 = true;
+					// 			$contadorCellMarked++;
+					// 		}
+					// 	}
+					// }
 
-	// 				// verificando o item de tras (coluna - 1) 
-	// 				if (($coluna - 1) < count($coluna)) {
+					// // verificando o item de tras (coluna - 1) 
+					// if (($coluna - 1) < count($coluna)) {
 
-	// 					if ($markedArray[$linha][$coluna - 1] != 1) {
-	// 						if ($blockClick == $checkArray[$linha][$coluna - 1]) {
-	// 							$checkArray[$linha][$coluna - 1] = 'transparent';
-	// 							$checkArray[$linha][$coluna - 1] = 1;
-	// 							$cellMarked						 = true;
-	// 							$contadorCellMarked++;
-	// 						}
-	// 					}
-	// 				}
+					// 	if ($markedArray[$linha][$coluna - 1] != 1) {
+					// 		if ($blockClick == $checkArray[$linha][$coluna - 1]) {
+					// 			$checkArray[$linha][$coluna - 1] = 'transparent';
+					// 			$checkArray[$linha][$coluna - 1] = 1;
+					// 			$cellMarked						 = true;
+					// 			$contadorCellMarked++;
+					// 		}
+					// 	}
+					// }
 
-	// 			}
-	// 		}
-	// 	}
+				}
+			}
+		}
 
-	// } while ($marked == true);
+	} while ($marked == true);
 
 }
 
@@ -198,9 +234,9 @@ if ($acao != 'click') {
 						// o valor de cada linha também é um array, com as células dessa linha por coluna
 						// aqui utilizamos o array de cada linha, para distribuir as células da tabela que vão compor a matriz
 						foreach($valorLinha as $coluna => $valorColuna) {
-							echo "<td onclick='javascript: window.location=\"same_game_rebuild.php?acao=click&linha={$linha}&coluna={$coluna}\"' style='padding: 16px; background-color:{};'></td>";
+							echo "<td onclick='javascript: window.location=\"same_game_rebuild.php?acao=click&linha={$linha}&coluna={$coluna}\"' style='padding: 16px; background-color:{};'>{$valorColuna}</td>";
 						}
-						
+
 					echo "</tr>";
 				}
 
@@ -229,11 +265,11 @@ if ($acao != 'click') {
 			<table border="1">
 				<?php
 
-					// reprodução da matriz que guarda os valores marcados
+					// reproduzimos a mask 
 					foreach ($markedArray as $linha) {
 						echo "<tr>";
-							foreach($linha as $coluna) {
-								echo "<td>{$coluna}<td>";
+							foreach ($linha as $coluna) {
+								echo "<td>{$coluna}</td>";
 							}
 						echo "</tr>";
 					}
@@ -243,8 +279,7 @@ if ($acao != 'click') {
 
 		</div>
 
-	</div>	
-
+	</div>
 
 	<?php
 		r($GLOBALS);
